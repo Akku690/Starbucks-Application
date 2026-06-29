@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'jdk17'
+        nodejs 'node16'
+    }
+
+    stages {
+
+        stage("Deploy to Container") {
+            steps {
+                script {
+                    // Stop & remove old container (if exists)
+                    sh """
+                    if [ \$(docker ps -aq -f name=starbucks) ]; then
+                        docker rm -f starbucks
+                    fi
+                    """
+
+                    // Run latest container
+                    sh """
+                    docker run -d --name starbucks -p 3000:3000 vikas4cloud/starbucks:latest
+                    """
+                }
+            }
+        }
+
+    }
+}
